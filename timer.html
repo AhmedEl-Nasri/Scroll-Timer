@@ -1,0 +1,201 @@
+
+<!--
+___________________________________________________________________________________________________________________________________________________________
+
+This code is for a Simple Scroll-Driven Timer Animation.
+It was made by : Ahmed El-Nasri .
+           At : 8  \  2  \  2024
+Contact me :
+  Linkdin  acc  : https://www.linkedin.com/in/ahmed-el-nasri-7952b0304?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app
+  Facebook acc : https://www.facebook.com/ahmed.elnasri.54?mibextid=JRoKGi
+  Gmail        : ahmedelnasri61@gmail.com
+
+___________________________________________________________________________________________________________________________________________________________
+-->
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scroll Timer</title>
+    <style>
+        :root {
+            --color-bg: #512828;
+            --color-text: #b6793c;
+            --color-theme: #efc8ab;
+            --color-theme-accent: #d5a07a;
+        }
+
+        @property --progress {
+            syntax: "<integer>";
+            initial-value: 0;
+            inherits: false;
+        }
+
+        body {
+            color: var(--color-text);
+            background-color: var(--color-bg);
+            font-family: system-ui, sans-serif;
+        }
+
+        .component {
+            --size: 30vmin;
+
+            display: grid;
+            grid-template-areas:
+                "timer"
+                "caption";
+            place-items: center;
+            place-content: center;
+            gap: 0.2em;
+            position: fixed;
+            inset: 0;
+            margin: auto;
+        }
+
+        .timer-wrapper {
+            grid-area: timer;
+            display: grid;
+            place-items: center;
+            place-content: center;
+            grid-template-areas: "container";
+            width: var(--size);
+            height: var(--size);
+            border-radius: 50%;
+            background: conic-gradient(
+                from 45deg,
+                var(--color-theme-accent) calc(var(--progress) * 1%),
+                transparent 0
+            );
+        }
+
+        .timer-wrapper > * {
+            grid-area: container;
+        }
+
+        .timer {
+            width: calc(var(--size) / 1.2);
+            height: calc(var(--size) / 1.2);
+        }
+
+        .caption {
+            grid-area: caption;
+        }
+
+        .caption::before,
+        .caption::after {
+            margin-inline: auto;
+            content: counter(progress);
+            font-size: calc(0.6em + var(--size) / 6);
+            font-weight: bold;
+            text-align: center;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .caption::after {
+            content: "%";
+        }
+
+       
+
+        @supports (animation-timeline: scroll()) {
+          
+            body {
+                height: 1000vh;
+            }
+
+            :is(.component, .timer-wrapper, .timer, .timer-hand, .timer-switch) {
+                animation-fill-mode: both;
+                animation-timing-function: linear;
+                animation-timeline: scroll();
+            }
+
+            .component {
+                --plunge-offset: 10rem;
+                --plunge-start: calc(100% - var(--plunge-offset) * 2);
+                --plunge-end: calc(100% - var(--plunge-offset));
+
+                animation-name: progress;
+                animation-range: 0 var(--plunge-start);
+                counter-reset: progress var(--progress);
+            }
+
+            .timer-wrapper {
+                animation-name: progress, turn-upright;
+                animation-range: 0 var(--plunge-start),
+                    var(--plunge-start) var(--plunge-end);
+            }
+
+            .timer {
+                --plunge-depth: 0.25em;
+                transform-origin: 50% 0;
+                animation-name: plunge;
+                animation-range: var(--plunge-start) var(--plunge-end);
+            }
+
+            .timer-switch {
+                --plunge-depth: 1em;
+                transform-origin: 50% 0;
+                animation-name: plunge;
+                animation-range: var(--plunge-start) var(--plunge-end);
+            }
+
+            .timer-hand {
+                transform-origin: 50%;
+                rotate: calc((var(--progress) / 100) * 360deg);
+                animation-name: progress;
+                animation-range: 0 var(--plunge-start);
+            }
+
+            @keyframes progress {
+                to {
+                    --progress: 100;
+                }
+            }
+
+            @keyframes turn-upright {
+                from {
+                    rotate: -10deg;
+                }
+                to {
+                    rotate: 0;
+                }
+            }
+
+            @keyframes plunge {
+                50% {
+                    translate: 0 var(--plunge-depth);
+                }
+            }
+
+            @keyframes fade-out {
+                from {
+                    opacity: 1;
+                }
+                to {
+                    opacity: 0;
+                }
+            }
+        }
+    </style>
+</head>
+<body>
+   
+
+    <figure class="component" aria-hidden="true" webc:root="override">
+        <div class="timer-wrapper">
+            <svg class="timer" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentcolor" viewBox="0 0 256 256">
+                <rect width="256" height="256" fill="none"></rect>
+                <circle cx="128" cy="128" r="88" fill="var(--color-theme)"></circle>
+                <circle cx="128" cy="128" r="88" fill="none" stroke="currentcolor" stroke-miterlimit="10" stroke-width="16"></circle>
+                <line class="timer-hand" x1="128" y1="128" x2="167.6" y2="88.4" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></line>
+                <line class="timer-switch" x1="104" y1="8" x2="152" y2="8" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></line>
+            </svg>
+        </div>
+        <figcaption class="caption"></figcaption>
+    </figure>
+</body>
+</html>
